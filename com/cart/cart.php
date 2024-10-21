@@ -1,37 +1,73 @@
+
+
 <?php
+$cart_file = 'C:\Xampp\htdocs\phpsqlserver\m7carrito\xmldatabase\cart.xml';
+$catalog_file = 'C:\Xampp\htdocs\phpsqlserver\m7carrito\xmldatabase\catalog.xml';
 
 ///////////////////////////////////////////////////////////
-function AddtoCart($id_prod, $quantity)
+
+function addToCart($item_id, $quantity)
 {
+    echo "addToCart called with item_id: $item_id and quantity: $quantity<br>";
 
-    echo "AddtoCart <br>";
-    echo $id_prod;
-    $cart = GetCart();
-
-    $item = $cart->addChild('product_item');
-    $item->addChild('id_product', $id_prod);
-    $item->addChild('quantity', $quantity);
-
-    $item_price = $item->addChild('price_item');
-    $item_price->addChild('price', '0');
-    $item_price->addChild('currency', 'EU');
-
-    $cart->asXML('xmldatabase/cart.xml');
-}
-///////////////////////////////////////////////////////////
-function GetCart()
-{
-
-    $file = 'C:\Xampphtdocs\phpsqlserver\m7 carrito\xmldatabase';
-
-    if (file_exists($file)) {
-
-        echo 'existe el fichero <br>';
-        $cart = simplexml_load_file($file);
+    if (existsProduct($item_id)) {
+        echo "Product exists<br>";
+        executeAddToCart($item_id, $quantity);
     } else {
-        echo 'no existe el fichero <br>';
-        $cart = new SimpleXMLElement('<cart></cart>');
+        echo 'No existe el producto<br>';
     }
-    return $cart;
 }
-///////////////////////////////////////////////////////////
+
+function executeAddToCart($item_id, $quantity)
+{
+    global $cart_file;
+
+    echo "executeAddToCart called with item_id: $item_id and quantity: $quantity<br>";
+
+    $cart = getCart();
+
+    $itemExists = false;
+    foreach ($cart->item as $item) {
+        if ((string)$item->id === (string)$item_id) {
+            $item->quantity += $quantity; // Actualiza la cantidad
+            $itemExists = true;
+            break;
+        }
+    }
+
+    if (!$itemExists) {
+        // Agregar un nuevo producto al carrito
+        $newItem = $cart->addChild('item');
+        $newItem->addChild('id', $item_id);
+        $newItem->addChild('quantity', $quantity);
+    }
+
+    // Guardar el carrito actualizado
+    $cart->asXML($cart_file);
+    echo 'Producto añadido al carrito correctamente.<br>';
+}
+
+// Manejo de acciones
+if (isset($_GET['action'])) {
+    $action = $_GET['action'];
+
+    switch ($action) {
+        case 'add':
+            addToCart($_GET['prod_id'], $_GET['quantity']);
+            break;
+        case 'remove':
+            removeFromCart($_GET['prod_id']);
+            break;
+        case 'view':
+            viewCart();
+            break;
+        case 'update':
+            updateCart($_GET['prod_id'], $_GET['quantity']);
+            break;
+        default:
+            echo "Acción no reconocida.<br>";
+            break;
+    }
+} else {
+    echo "No se ha especificado ninguna acción.<br>";
+}
