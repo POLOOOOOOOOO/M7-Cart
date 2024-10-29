@@ -1,1 +1,33 @@
-No hem funciona ni la meitat de coses pero ho acabare a casa encara que no serveixi per si fas entrevista
+Añadir un producto al carrito
+
+Comando: localhost/main.php?action=add_to_cart&product_id=101&quantity=2
+
+
+Descripción: Añade el producto con product_id=101 (por ejemplo, un Kebab) en una cantidad de 2 al carrito.
+Eliminar un producto del carrito
+
+Comando: localhost/main.php?action=remove_from_cart&product_id=101
+
+
+Descripción: Elimina el producto con product_id=101 del carrito.
+Ver el contenido del carrito
+
+Comando: localhost/main.php?action=view_cart
+
+
+Descripción: Muestra el contenido del carrito, listando cada producto, su cantidad y el subtotal. También muestra el total acumulado de todos los productos.
+Actualizar la cantidad de un producto en el carrito
+
+Comando: localhost/main.php?action=update_cart&product_id=101&quantity=3
+
+Descripción: Actualiza la cantidad del producto con product_id=101 en el carrito a 3.
+Guardar el carrito
+
+Comando: localhost/user.php?action=save_cart&user_id=1
+
+Descripción: Guarda el carrito actual en users.xml para el usuario con user_id=1.
+Cargar un carrito guardado
+
+Comando: localhost/user.php?action=load_cart&user_id=1
+
+Descripción: Carga el carrito guardado para el usuario con user_id=1 y lo muestra.
