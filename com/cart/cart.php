@@ -1,73 +1,57 @@
-
-
 <?php
-$cart_file = 'C:\Xampp\htdocs\phpsqlserver\m7carrito\xmldatabase\cart.xml';
-$catalog_file = 'C:\Xampp\htdocs\phpsqlserver\m7carrito\xmldatabase\catalog.xml';
-
-///////////////////////////////////////////////////////////
-
-function addToCart($item_id, $quantity)
+function addToCart($productId, $quantity)
 {
-    echo "addToCart called with item_id: $item_id and quantity: $quantity<br>";
-
-    if (existsProduct($item_id)) {
-        echo "Product exists<br>";
-        executeAddToCart($item_id, $quantity);
+    include 'catalog.php';
+    if (checkStock($productId, $quantity)) {
+        $cart = simplexml_load_file('cart.xml');
+        $item = $cart->addChild('item');
+        $item->addAttribute('id', $productId);
+        $item->addAttribute('quantity', $quantity);
+        $cart->asXML('cart.xml');
+        echo "Producto añadido correctamente";
     } else {
-        echo 'No existe el producto<br>';
+        echo "Stock insuficiente";
     }
 }
 
-function executeAddToCart($item_id, $quantity)
+function removeFromCart($productId)
 {
-    global $cart_file;
-
-    echo "executeAddToCart called with item_id: $item_id and quantity: $quantity<br>";
-
-    $cart = getCart();
-
-    $itemExists = false;
-    foreach ($cart->item as $item) {
-        if ((string)$item->id === (string)$item_id) {
-            $item->quantity += $quantity; // Actualiza la cantidad
-            $itemExists = true;
+    $cart = simplexml_load_file('cart.xml');
+    foreach ($cart->item as $index => $item) {
+        if ($item['id'] == $productId) {
+            unset($cart->item[$index]);
+            $cart->asXML('cart.xml');
+            echo "Producto eliminado";
             break;
         }
     }
-
-    if (!$itemExists) {
-        // Agregar un nuevo producto al carrito
-        $newItem = $cart->addChild('item');
-        $newItem->addChild('id', $item_id);
-        $newItem->addChild('quantity', $quantity);
-    }
-
-    // Guardar el carrito actualizado
-    $cart->asXML($cart_file);
-    echo 'Producto añadido al carrito correctamente.<br>';
 }
 
-// Manejo de acciones
-if (isset($_GET['action'])) {
-    $action = $_GET['action'];
-
-    switch ($action) {
-        case 'add':
-            addToCart($_GET['prod_id'], $_GET['quantity']);
-            break;
-        case 'remove':
-            removeFromCart($_GET['prod_id']);
-            break;
-        case 'view':
-            viewCart();
-            break;
-        case 'update':
-            updateCart($_GET['prod_id'], $_GET['quantity']);
-            break;
-        default:
-            echo "Acción no reconocida.<br>";
-            break;
+function viewCart()
+{
+    $cart = simplexml_load_file('cart.xml');
+    $total = 0;
+    foreach ($cart->item as $item) {
+        $productId = $item['id'];
+        include 'catalog.php';
+        $info = getProductInfo($productId);
+        $quantity = $item['quantity'];
+        $subtotal = $quantity * $info['price'];
+        echo "{$info['name']} - Cantidad: {$quantity}, Subtotal: {$subtotal}\n";
+        $total += $subtotal;
     }
-} else {
-    echo "No se ha especificado ninguna acción.<br>";
+    echo "Total: {$total}\n";
+}
+
+function updateCart($productId, $quantity)
+{
+    $cart = simplexml_load_file('cart.xml');
+    foreach ($cart->item as $item) {
+        if ($item['id'] == $productId) {
+            $item['quantity'] = $quantity;
+            $cart->asXML('cart.xml');
+            echo "Cantidad actualizada";
+            break;
+        }
+    }
 }

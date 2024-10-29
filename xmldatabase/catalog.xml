@@ -1,15 +1,13 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <catalog>
-    <product>
-        <id>1</id>
-        <name>Producto 1</name>
-        <price>10.00</price>
-        <stock>20</stock>
+    <product id="101">
+        <name>Kebab</name>
+        <price>5.99</price>
+        <stock>50</stock>
     </product>
-    <product>
-        <id>2</id>
-        <name>Producto 2</name>
-        <price>15.00</price>
-        <stock>10</stock>
+    <product id="102">
+        <name>Drink</name>
+        <price>1.99</price>
+        <stock>30</stock>
     </product>
 </catalog>
+ 
