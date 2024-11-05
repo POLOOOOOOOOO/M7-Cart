@@ -5,9 +5,14 @@
         <stock>50</stock>
     </product>
     <product id="102">
-        <name>Drink</name>
+        <name>Beguda</name>
         <price>1.99</price>
         <stock>30</stock>
+    </product>
+    <product>
+        <name>Patates</name>
+        <price>2.50</price>
+        <stock>25</stock>
     </product>
 </catalog>
  

@@ -1,25 +1,49 @@
 <?php
-session_start();
-include_once('com/cart/cart.php');
-include_once('com/user/user.php');
-include_once('com/catalog/catalog.php');
-include_once('com/')
-
+include 'user/user.php';
+include 'catalog/catalog.php';
+include 'cart/cart.php';
 
 if (isset($_GET['action'])) {
     $action = $_GET['action'];
+
     switch ($action) {
-        case 'add_to_cart':
-            addToCart($_GET['product_id'], $_GET['quantity']);
+        case 'add':
+            if (isset($_GET['id']) && isset($_GET['quantity'])) {
+                $productId = $_GET['id'];
+                $quantity = $_GET['quantity'];
+                addToCart($productId, $quantity);
+            } else {
+                echo "Error: ID de producto o cantidad no especificados.";
+            }
             break;
-        case 'remove_from_cart':
-            removeFromCart($_GET['product_id']);
+
+        case 'remove':
+            if (isset($_GET['id'])) {
+                $productId = $_GET['id'];
+                removeFromCart($productId);
+            } else {
+                echo "Error: ID de producto no especificado.";
+            }
             break;
-        case 'view_cart':
+
+        case 'view':
             viewCart();
             break;
-        case 'update_cart':
-            updateCart($_GET['product_id'], $_GET['quantity']);
+
+        case 'update':
+            if (isset($_GET['id']) && isset($_GET['quantity'])) {
+                $productId = $_GET['id'];
+                $quantity = $_GET['quantity'];
+                updateCart($productId, $quantity);
+            } else {
+                echo "Error: ID de producto o cantidad no especificados.";
+            }
+            break;
+
+        default:
+            echo "Acción no válida.";
             break;
     }
+} else {
+    echo "Especifica una acción (add, remove, view, update) en la URL.";
 }
